@@ -11,8 +11,8 @@ services:
     env_file: ./conf.d/panel.env
     image: ccarney16/pterodactyl-panel:latest
     ports:
-    - 80:80
-    - 443:443
+    - ${PANEL_PORT:-80}:80
+    - ${PANEL_PORT_SSL:-443}:443
     restart: always
     volumes:
     - ./data/panel:/data

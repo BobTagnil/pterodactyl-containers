@@ -9,8 +9,8 @@ services:
       - TZ=${DAEMON_TIMEZONE:-UTC}
       image: ccarney16/pterodactyl-daemon:latest
       ports:
-      - 2022:2022
-      - 8080:8080
+      - {DEAMON_PORT_SFTP:-2022}:2022
+      - {DEAMON_PORT_HTTP:-8080}:8080
       privileged: true
       restart: always
       volumes:
