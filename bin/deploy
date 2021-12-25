@@ -284,6 +284,7 @@ for ((i=1; i<=$#; i++)); do
             --panel-port-https)
                 ((i++))
                 config_panel_port_https="${!i}"
+                ;;
             --db-address) # Allows Database to be bound to a port;
                 ((i++))
                 config_database_ip_address="${!i}"
