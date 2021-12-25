@@ -18,8 +18,14 @@ flag_enable_build=""
 # Allows configuring where the output can be put out to.
 flag_stdout="docker-compose.yml"
 
+# Panel Configuration
+config_panel_port_http=""
+config_panel_port_https=""
+
 # Daemon Configuration
 config_daemon_dir=""
+config_deamon_port_sftp=""
+config_deamon_port_http=""
 
 config_docker_socket=""
 
@@ -44,8 +50,13 @@ function _return_help {
     echo ""
     echo " --daemon-dir             - configures where the daemon sets its files and config (ex. /var/lib/pterodactyl)"
     echo " --docker-socket          - where the daemon contacts docker (ex. /var/run/docker.sock)"
-	echo ""
+	echo " --deamon-port-http       - change deamon container outside http port from 8080"
+    echo " --deamon-port-sftp       - change deamon container outside sftp port from 2022"
+    echo ""
     echo " --db-address             - configures the database address (ex. 127.0.0.1:3306)"
+    echo ""
+    echo " --panel-port-http        - change panel container outside http port from 80"
+    echo " --panel-port-https       - change panel container outside https port from 443"
     echo ""
     echo " [*] When building a custom docker-compose file, you must specify either the panel or daemon to build"
     echo ""
@@ -161,6 +172,38 @@ function build_config {
         fi
     fi
 
+    if [ ! $config_deamon_port_http == "" ]; then
+        if grep -q "DEAMON_PORT_HTTP=" .env; then
+            sed -i "s|DEAMON_PORT_HTTP=.*|DEAMON_PORT_HTTP=$config_panel_port_http|" .env
+        else
+            echo "DEAMON_PORT_HTTP=$config_panel_port_http" >> .env
+        fi
+    fi
+
+    if [ ! $config_deamon_port_sftp == "" ]; then
+        if grep -q "DEAMON_PORT_SFTP=" .env; then
+            sed -i "s|DEAMON_PORT_SFTP=.*|DEAMON_PORT_SFTP=$config_deamon_port_sftp|" .env
+        else
+            echo "DEAMON_PORT_SFTP=$config_deamon_port_sftp" >> .env
+        fi
+    fi
+
+    if [ ! $config_panel_port_http == "" ]; then
+        if grep -q "PANEL_PORT_HTTP=" .env; then
+            sed -i "s|PANEL_PORT_HTTP=.*|PANEL_PORT_HTTP=$config_panel_port_http|" .env
+        else
+            echo "PANEL_PORT_HTTP=$config_panel_port_http" >> .env
+        fi
+    fi
+
+    if [ ! $config_panel_port_https == "" ]; then
+        if grep -q "PANEL_PORT_HTTPS=" .env; then
+            sed -i "s|PANEL_PORT_HTTPS=.*|PANEL_PORT_HTTPS=$config_panel_port_https|" .env
+        else
+            echo "PANEL_PORT_HTTPS=$config_panel_port_https" >> .env
+        fi
+    fi
+
     # Create conf.d/data directory
 
     # Make directory and populate it with base environment files
@@ -226,6 +269,21 @@ for ((i=1; i<=$#; i++)); do
                 ((i++))
                 config_docker_socket="${!i}"
                 ;;
+            --deamon-port-http)
+                ((i++))
+                config_deamon_port_http="${!i}"
+                ;;
+            --deamon-port-sftp)
+                ((i++))
+                config_deamon_port_sftp="${!i}"
+                ;;
+            --panel-port-http)
+                ((i++))
+                config_panel_port_http="${!i}"
+                ;;
+            --panel-port-https)
+                ((i++))
+                config_panel_port_https="${!i}"
             --db-address) # Allows Database to be bound to a port;
                 ((i++))
                 config_database_ip_address="${!i}"
